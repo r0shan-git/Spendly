@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy — Spendly{% endblock %}
+
+{% block head %}
+<style>
+    .privacy-container {
+        max-width: 800px;
+        margin: 4rem auto;
+        padding: 0 2rem;
+    }
+    
+    .privacy-header {
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+    
+    .privacy-title {
+        font-family: var(--font-display);
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        color: var(--ink);
+        margin-bottom: 1rem;
+    }
+    
+    .privacy-updated {
+        font-size: 0.85rem;
+        color: var(--ink-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 500;
+    }
+    
+    .privacy-card {
+        background: var(--paper-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 3.5rem;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.03);
+    }
+    
+    .privacy-section {
+        margin-bottom: 2.5rem;
+    }
+    
+    .privacy-section:last-child {
+        margin-bottom: 0;
+    }
+    
+    .privacy-section h2 {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        color: var(--accent);
+        margin-bottom: 1.25rem;
+        border-bottom: 1px solid var(--border-soft);
+        padding-bottom: 0.5rem;
+    }
+    
+    .privacy-section p {
+        font-size: 0.95rem;
+        color: var(--ink-soft);
+        line-height: 1.75;
+        margin-bottom: 1.25rem;
+    }
+    
+    .privacy-section p:last-child {
+        margin-bottom: 0;
+    }
+
+    .privacy-section ul {
+        margin-left: 1.5rem;
+        margin-bottom: 1.25rem;
+        color: var(--ink-soft);
+        font-size: 0.95rem;
+    }
+
+    .privacy-section li {
+        margin-bottom: 0.6rem;
+        line-height: 1.7;
+    }
+    
+    @media (max-width: 600px) {
+        .privacy-container {
+            margin: 2rem auto;
+            padding: 0 1.25rem;
+        }
+        .privacy-card {
+            padding: 2.5rem 1.75rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="privacy-container">
+    <div class="privacy-header">
+        <h1 class="privacy-title">Privacy Policy</h1>
+        <p class="privacy-updated">Last Updated: July 6, 2026</p>
+    </div>
+    
+    <div class="privacy-card">
+        <section class="privacy-section">
+            <h2>1. Data We Collect</h2>
+            <p>
+                To provide you with our expense tracking services, Spendly collects the following information:
+            </p>
+            <ul>
+                <li><strong>Account Information:</strong> When you register, we collect your email address and password (securely hashed) to manage your user account.</li>
+                <li><strong>Financial Data:</strong> We collect and process the transaction details, expense categories, amounts, dates, and notes that you manually input into the application.</li>
+                <li><strong>Technical Data:</strong> Standard system and browser information may be logged automatically when using our interface to assist with troubleshooting and optimization.</li>
+            </ul>
+        </section>
+        
+        <section class="privacy-section">
+            <h2>2. How We Use Your Data</h2>
+            <p>
+                We use the data we collect solely for the purpose of serving your personal expense tracking needs. This includes:
+            </p>
+            <ul>
+                <li>Creating, maintaining, and securing your user account.</li>
+                <li>Visualizing your transaction logs, calculating total monthly spend, and rendering expense category breakdowns.</li>
+                <li>Providing technical support and troubleshooting issues.</li>
+                <li>Improving the app's performance, user experience, and features.</li>
+            </ul>
+            <p>
+                We will never sell your personal data or transaction history to third-party advertisers.
+            </p>
+        </section>
+        
+        <section class="privacy-section">
+            <h2>3. Data Storage & Security</h2>
+            <p>
+                The security of your personal and financial information is our top priority. We implement modern, standard industry practices to safeguard your data:
+            </p>
+            <p>
+                All account credentials and transaction data are stored securely in our application database. Hashed passwords ensure that your credentials remain private. While we take maximum precautions to protect your data, please be aware that no storage method or transmission over the internet is 100% secure, and we cannot guarantee absolute security.
+            </p>
+        </section>
+        
+        <section class="privacy-section">
+            <h2>4. Third-Party Services</h2>
+            <p>
+                Spendly is designed as a standalone personal finance tool. We do not integrate with third-party tracking networks, financial data brokers, or advertising platforms. 
+            </p>
+            <p>
+                If we use third-party cloud hosting providers or database systems to power our application, these providers are contractually obligated to protect your data and are prohibited from using it for any other purpose.
+            </p>
+        </section>
+        
+        <section class="privacy-section">
+            <h2>5. Contact Us</h2>
+            <p>
+                If you have any questions, comments, or concerns regarding this Privacy Policy or our data handling practices, please contact us:
+            </p>
+            <ul>
+                <li>Email: privacy@spendly.example.com</li>
+                <li>Support: support@spendly.example.com</li>
+            </ul>
+        </section>
+    </div>
+</div>
+{% endblock %}
