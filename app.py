@@ -1,9 +1,10 @@
+import functools
 import os
 import re
 import sqlite3
 
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from database.db import get_db, init_db, seed_db
 
@@ -15,6 +16,21 @@ with app.app_context():
     init_db()
     seed_db()
 
+
+
+# ------------------------------------------------------------------ #
+# Auth decorator                                                      #
+# ------------------------------------------------------------------ #
+
+def login_required(f):
+    """Decorator that redirects unauthenticated users to the login page."""
+    @functools.wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("user_id"):
+            flash("Please sign in to continue.", "error")
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 # ------------------------------------------------------------------ #
@@ -102,9 +118,46 @@ def register():
     return redirect(url_for("login"))
 
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    return render_template("login.html")
+    # Redirect already-authenticated users away from the login page
+    if session.get("user_id"):
+        return redirect(url_for("landing"))
+
+    if request.method == "GET":
+        return render_template("login.html")
+
+    # --- POST: validate credentials and create session ---
+    email = request.form.get("email", "").strip()
+    password = request.form.get("password", "")
+
+    # 1. Both fields required
+    if not email or not password:
+        flash("All fields are required.", "error")
+        return render_template("login.html", email=email)
+
+    # 2. Look up user by email
+    conn = get_db()
+    try:
+        user = conn.execute(
+            "SELECT id, name, password_hash FROM users WHERE LOWER(email) = ?",
+            (email.lower(),),
+        ).fetchone()
+
+        # 3. Generic error for unknown email or wrong password (prevents enumeration)
+        if user is None or not check_password_hash(user["password_hash"], password):
+            flash("Invalid email or password.", "error")
+            return render_template("login.html", email=email)
+    finally:
+        conn.close()
+
+    # 4. Credentials valid — create session
+    session.clear()  # Prevent session fixation
+    session["user_id"] = user["id"]
+    session["user_name"] = user["name"]
+
+    flash(f"Welcome back, {user['name']}!", "success")
+    return redirect(url_for("landing"))
 
 
 @app.route("/terms")
@@ -125,7 +178,9 @@ def privacy():
 
 @app.route("/logout")
 def logout():
-    return "Logout — coming in Step 3"
+    session.clear()
+    flash("You have been signed out.", "success")
+    return redirect(url_for("landing"))
 
 
 @app.route("/profile")

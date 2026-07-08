@@ -113,6 +113,12 @@ a { color: inherit; text-decoration: none; }
 
 .nav-cta:hover { background: var(--accent) !important; }
 
+.nav-greeting {
+    color: var(--ink-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
 /* ------------------------------------------------------------------ */
 /* Main                                                                */
 /* ------------------------------------------------------------------ */
