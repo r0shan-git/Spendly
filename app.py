@@ -11,6 +11,55 @@ from database.db import get_db, init_db, seed_db
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+
+# ------------------------------------------------------------------ #
+# Jinja2 custom filters                                               #
+# ------------------------------------------------------------------ #
+
+@app.template_filter("inr")
+def inr_format(value):
+    """
+    Format a numeric value using Indian digit grouping and 2 decimal places.
+    Example: 123456.5 → "1,23,456.50"
+    """
+    try:
+        value = float(value)
+    except (TypeError, ValueError):
+        return "0.00"
+
+    # Split integer and decimal parts
+    integer_part = int(value)
+    decimal_part = round((value - integer_part) * 100)
+    decimal_str = f"{decimal_part:02d}"
+
+    s = str(integer_part)
+    if len(s) <= 3:
+        return f"{s}.{decimal_str}"
+
+    # Last 3 digits, then groups of 2 from the right
+    result = s[-3:]
+    s = s[:-3]
+    while s:
+        result = s[-2:] + "," + result
+        s = s[:-2]
+
+    return f"{result}.{decimal_str}"
+
+
+@app.template_filter("format_date")
+def format_date(value):
+    """
+    Convert a SQLite datetime string to a human-readable 'Month YYYY' format.
+    Example: "2026-07-09 12:34:56" → "July 2026"
+    Falls back gracefully if the value is missing or malformed.
+    """
+    from datetime import datetime
+    try:
+        dt = datetime.strptime(str(value)[:10], "%Y-%m-%d")
+        return dt.strftime("%B %Y")
+    except (TypeError, ValueError):
+        return value or "Unknown"
+
 # Initialize database and seed demo data on startup
 with app.app_context():
     init_db()
@@ -184,8 +233,55 @@ def logout():
 
 
 @app.route("/profile")
+@login_required
 def profile():
-    return "Profile page — coming in Step 4"
+    user_id = session["user_id"]
+    conn = get_db()
+    try:
+        # Fetch full user record (never pass password_hash to template)
+        user = conn.execute(
+            "SELECT name, email, created_at FROM users WHERE id = ?",
+            (user_id,),
+        ).fetchone()
+
+        # Guard: stale session (e.g. account deleted externally)
+        if user is None:
+            session.clear()
+            flash("Your session has expired. Please sign in again.", "error")
+            return redirect(url_for("login"))
+
+        # Single aggregate query — COALESCE prevents NULL when user has no expenses
+        stats = conn.execute(
+            """
+            SELECT COUNT(id) AS expense_count,
+                   COALESCE(SUM(amount), 0) AS total_spent
+            FROM expenses
+            WHERE user_id = ?
+            """,
+            (user_id,),
+        ).fetchone()
+
+    finally:
+        conn.close()
+
+    # Compute initials server-side
+    words = [w for w in user["name"].split() if w]
+    if not words:
+        initials = "?"
+    elif len(words) == 1:
+        initials = words[0][0].upper()
+    else:
+        initials = (words[0][0] + words[-1][0]).upper()
+
+    return render_template(
+        "profile.html",
+        name=user["name"],
+        email=user["email"],
+        created_at=user["created_at"],
+        expense_count=stats["expense_count"],
+        total_spent=stats["total_spent"],
+        initials=initials,
+    )
 
 
 @app.route("/expenses/add")
