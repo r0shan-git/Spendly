@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile — Spendly{% endblock %}
+
+{% block content %}
+
+<section class="profile-section">
+    <div class="profile-container">
+
+        <!-- ── Profile header card ── -->
+        <div class="profile-card">
+
+            <!-- Avatar: initials computed server-side, aria-label for screen readers -->
+            <div class="profile-avatar" aria-label="Profile initials: {{ initials }}">{{ initials }}</div>
+
+            <!-- Identity -->
+            <div class="profile-identity">
+                <h1 class="profile-name">{{ name }}</h1>
+                <p class="profile-email">{{ email }}</p>
+                <p class="profile-since">
+                    Member since {{ created_at | format_date }}
+                </p>
+            </div>
+
+            <!-- Edit Profile — disabled placeholder (implemented in a future step) -->
+            <button class="btn-edit-profile" disabled title="Coming soon — profile editing will be available in a future update">
+                <i data-lucide="pencil" class="btn-edit-icon"></i>
+                Edit Profile
+                <span class="btn-edit-soon">Soon</span>
+            </button>
+
+        </div>
+
+        <!-- ── Expense snapshot ── -->
+        <div class="profile-stats-section">
+            <h2 class="profile-stats-heading">Spending Overview</h2>
+
+            <div class="profile-stats">
+
+                <!-- Stat: Total expenses logged -->
+                <div class="stat-card" id="stat-total-expenses">
+                    <div class="stat-icon" aria-hidden="true">
+                        <i data-lucide="receipt"></i>
+                    </div>
+                    <div class="stat-value">{{ expense_count }}</div>
+                    <div class="stat-label">Expenses Logged</div>
+                </div>
+
+                <!-- Stat: Total amount spent (INR, Indian digit grouping) -->
+                <div class="stat-card" id="stat-total-spent">
+                    <div class="stat-icon" aria-hidden="true">
+                        <i data-lucide="indian-rupee"></i>
+                    </div>
+                    <div class="stat-value">{{ total_spent | inr }}</div>
+                    <div class="stat-label">Total Spent</div>
+                </div>
+
+            </div>
+
+            <!-- Empty state — shown only when the user has no expenses yet -->
+            {% if expense_count == 0 %}
+            <p class="profile-stats-empty">
+                No expenses logged yet.
+                <a href="{{ url_for('add_expense') }}" class="stats-empty-link">
+                    Log your first expense →
+                </a>
+            </p>
+            {% endif %}
+
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
