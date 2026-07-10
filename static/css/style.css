@@ -334,6 +334,7 @@ a { color: inherit; text-decoration: none; }
 .category-bar {
     height: 100%;
     border-radius: 999px;
+    background-color: hsl(var(--category-hue, 180), 70%, 50%);
 }
 
 .category-bar.food-bar {
@@ -778,7 +779,7 @@ a { color: inherit; text-decoration: none; }
 
 .profile-stats {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
 }
 
@@ -915,3 +916,83 @@ a { color: inherit; text-decoration: none; }
 }
 
 .stats-empty-link:hover { opacity: 0.75; }
+
+/* === Transaction History Table & Category Badges === */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+}
+
+.transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.transactions-table th,
+.transactions-table td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.transactions-table th {
+    background: var(--paper-warm);
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.transactions-table tr:last-child td {
+    border-bottom: none;
+}
+
+.transactions-table tbody tr:hover {
+    background: var(--paper);
+}
+
+.text-right {
+    text-align: right;
+}
+
+.amount-cell {
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.category-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+    background: var(--border-soft);
+    color: var(--ink-muted);
+}
+
+.category-badge.badge-food { background: #fee2e2; color: #991b1b; }
+.category-badge.badge-bills { background: #ffedd5; color: #9a3412; }
+.category-badge.badge-transport { background: #e0f2fe; color: #075985; }
+.category-badge.badge-health { background: #dcfce7; color: #166534; }
+.category-badge.badge-entertainment { background: #f3e8ff; color: #6b21a8; }
+.category-badge.badge-shopping { background: #fae8ff; color: #86198f; }
+.category-badge.badge-other { background: var(--border-soft); color: var(--ink-soft); }
+
+@media (max-width: 768px) {
+    .profile-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-stats {
+        grid-template-columns: 1fr;
+    }
+}
