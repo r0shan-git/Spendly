@@ -18,7 +18,7 @@
                 <h1 class="profile-name">{{ name }}</h1>
                 <p class="profile-email">{{ email }}</p>
                 <p class="profile-since">
-                    Member since {{ created_at | format_date }}
+                    Member since {{ member_since }}
                 </p>
             </div>
 
@@ -51,8 +51,17 @@
                     <div class="stat-icon" aria-hidden="true">
                         <i data-lucide="indian-rupee"></i>
                     </div>
-                    <div class="stat-value">{{ total_spent | inr }}</div>
+                    <div class="stat-value">₹{{ total_spent | inr }}</div>
                     <div class="stat-label">Total Spent</div>
+                </div>
+
+                <!-- Stat: Top Category -->
+                <div class="stat-card" id="stat-top-category">
+                    <div class="stat-icon" aria-hidden="true">
+                        <i data-lucide="trending-up"></i>
+                    </div>
+                    <div class="stat-value">{{ top_category }}</div>
+                    <div class="stat-label">Top Category</div>
                 </div>
 
             </div>
@@ -65,6 +74,74 @@
                     Log your first expense →
                 </a>
             </p>
+            {% else %}
+            
+            <!-- Category breakdown progress bars -->
+            <div class="category-breakdown-card" style="margin-top: 1.5rem;">
+                <h3 class="profile-stats-heading" style="margin-bottom: 1.25rem;">Category Breakdown</h3>
+                {% set category_classes = {
+                    'Food': 'food-bar',
+                    'Bills': 'bills-bar',
+                    'Transport': 'travel-bar',
+                    'Travel': 'travel-bar',
+                    'Health': 'health-bar',
+                    'Entertainment': 'entertainment-bar',
+                    'Shopping': 'shopping-bar',
+                    'Other': 'other-bar'
+                } %}
+                {% set category_hues = {
+                    'Food': 35,
+                    'Bills': 280,
+                    'Transport': 200,
+                    'Travel': 200,
+                    'Health': 120,
+                    'Entertainment': 340,
+                    'Shopping': 15,
+                    'Other': 180
+                } %}
+                {% for item in category_breakdown %}
+                {% set cat_class = category_classes.get(item.category, 'other-bar') %}
+                {% set hue = category_hues.get(item.category, 180) %}
+                <div class="category-row">
+                    <span class="category-label" style="display: flex; flex-direction: column; width: auto; min-width: 85px;">
+                        {{ item.category }}
+                        <small style="font-weight: normal; color: var(--ink-muted); margin-top: 2px;">
+                            {{ item.percentage }}% • ₹{{ item.total_amount | inr }}
+                        </small>
+                    </span>
+                    <div class="category-bar-track">
+                        <div class="category-bar {{ cat_class }}" style="width: {{ item.percentage }}%; --category-hue: {{ hue }};"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- ── Recent Transactions Table ── -->
+            <div class="profile-transactions-section" style="margin-top: 1.5rem;">
+                <h2 class="profile-stats-heading" style="margin-bottom: 1rem;">Recent Transactions</h2>
+                <div class="table-container">
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th class="text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tx in recent_transactions %}
+                            <tr>
+                                <td>{{ tx.date }}</td>
+                                <td>{{ tx.description or '—' }}</td>
+                                <td><span class="category-badge badge-{{ tx.category.lower() }}">{{ tx.category }}</span></td>
+                                <td class="text-right amount-cell">₹{{ tx.amount | inr }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             {% endif %}
 
         </div>
